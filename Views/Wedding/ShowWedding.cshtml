@@ -1,0 +1,35 @@
+@model Wedding
+
+<a asp-action="Dashboard" asp-controller="Wedding">Dashboard</a>
+<a asp-action="Logout" asp-controller="Home">Log Out</a>
+
+<h1>@Model.WedderOne & @Model.WedderTwo's Wedding</h1>
+
+<p>@Model.Date.ToLongDateString()</p>
+<p>@Model.Date.ToShortTimeString()</p>
+<p>Wedding Planner: @Model.Planner.FirstName @Model.Planner.LastName</p>
+
+<div>
+    <h4>Guests:</h4>
+    @foreach(var r in @Model.GuestList)
+    {
+        <p>@r.Guest.FirstName @r.Guest.LastName</p>
+
+    }
+</div>
+
+    @if(ViewBag.User.UserId == Model.Planner.UserId)
+    {
+        <a asp-action="DeleteWedding" asp-controller="Wedding" asp-route-weddingId="@Model.WeddingId">Delete</a>
+    }
+    else 
+    {
+        @if(Model.GuestList.All(r => r.UserId != ViewBag.User.UserId))
+    {
+        <a asp-action="Rsvp" asp-controller="Wedding" asp-route-weddingId="@Model.WeddingId" asp-route-userId="@ViewBag.User.UserId" asp-route-status="Rsvp">RSVP</a>
+    }
+        @if(Model.GuestList.Any(r => r.UserId == ViewBag.User.UserId))
+            {
+        <a asp-action="Rsvp" asp-controller="Wedding" asp-route-weddingId="@Model.WeddingId" asp-route-userId="@ViewBag.User.UserId" asp-route-status="Un-Rsvp">Un-RSVP</a>
+        }
+    }

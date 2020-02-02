@@ -1,0 +1,51 @@
+@model List<Wedding>
+
+
+<h1>Welcome to the Wedding Planner, @ViewBag.User.FirstName!</h1>
+<a asp-action="Logout" asp-controller="Home">Log Out</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Wedding</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+            <th scope="col">Guest #</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+            @foreach(var w in @Model)
+            {
+            @if(w.Date > DateTime.Now)
+            {
+            <tr>
+                <td><a asp-action="ShowWedding" asp-route-weddingId="@w.WeddingId" asp-controller="Wedding">@w.WedderOne & @w.WedderTwo</a></td>
+                <td>@w.Date.ToLongDateString()</td>
+                <td>@w.Date.ToShortTimeString()</td>
+                <td>@w.GuestList.Count</td>
+                <td>
+                    @if(ViewBag.User.UserId == w.Planner.UserId)
+                    {
+                    <a asp-action="DeleteWedding" asp-controller="Wedding" asp-route-weddingId="@w.WeddingId">Delete</a>
+                    }
+                    else 
+                    {
+                        @if(w.GuestList.All(r => r.UserId != ViewBag.User.UserId))
+                        {
+                            <a asp-action="Rsvp" asp-controller="Wedding" asp-route-weddingId="@w.WeddingId" asp-route-userId="@ViewBag.User.UserId" asp-route-status="Rsvp">RSVP</a>
+                        }
+                        @if(w.GuestList.Any(r => r.UserId == ViewBag.User.UserId))
+                        {
+                            <a asp-action="Rsvp" asp-controller="Wedding" asp-route-weddingId="@w.WeddingId" asp-route-userId="@ViewBag.User.UserId" asp-route-status="Un-Rsvp">Un-RSVP</a>
+                        }
+                    }
+                </td>
+            </tr>
+            }
+            }
+    </tbody>
+</table>
+
+<a asp-action="NewWedding" asp-controller="Wedding" class="btn btn-primary">Create a new wedding!</a>
